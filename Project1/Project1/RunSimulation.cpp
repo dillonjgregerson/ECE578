@@ -23,38 +23,53 @@ int main()
 	Simulator simulator;
 
 	std::cout << "Hello Simulation\n";
-	Station::StationConfig stationAConfig;
-	Station::StationConfig stationBConfig;
 
+	//Configuring and setting up Station A
+	Station::StationConfig stationAConfig;
 	stationAConfig.stationName = "Station A";
 	stationAConfig.stationId   = simulator.getUniqueMsgId();
 	stationAConfig.protocol    = new DcfProtocol(stationAConfig.stationId);
-
 	Station stationA(stationAConfig);
 
-	stationBConfig.stationName = "Station B";
-	stationBConfig.stationId = simulator.getUniqueMsgId();
-	stationBConfig.protocol = new DcfProtocol(stationBConfig.stationId);
+	//Configuring and setting up Access Point B
+	AccessPoint::ConfigData configApB;
+	configApB.msgId = simulator.getUniqueMsgId();
+	configApB.accessPointName = "Access Point B";
+	configApB.protocol = new DcfProtocol(configApB.msgId);
+	AccessPoint accessPointB(configApB);
+	accessPointB.addReceptionStations(&stationA);
+	accessPointB.printReceptionStations();
 
-	Station stationB(stationBConfig);
-
-
-	AccessPoint::ConfigData config;
-	config.protocol = new ProtocolBase();
-	AccessPoint accessPoint(config);
-
-	accessPoint.addReceptionStations(&stationA);
-	accessPoint.addReceptionStations(&stationB);
-
-	accessPoint.printReceptionStations();
-
+	//Adding Station A and Access Point B to the Simulator
 	simulator.addStation(&stationA);
-	simulator.addStation(&accessPoint);
+	simulator.addStation(&accessPointB);
+
+
+	///////////////////////////////////////////////////////////////////
+	//Configuring and setting up Station C
+	Station::StationConfig stationCConfig;
+	stationCConfig.stationName = "Station C";
+	stationCConfig.stationId = simulator.getUniqueMsgId();
+	stationCConfig.protocol = new DcfProtocol(stationCConfig.stationId);
+	Station stationC(stationCConfig);
+
+	//Configuring and setting up Access Point D
+	AccessPoint::ConfigData configApD;
+	configApD.msgId = simulator.getUniqueMsgId();
+	configApD.accessPointName = "Access Point B";
+	configApD.protocol = new DcfProtocol(configApD.msgId);
+	AccessPoint accessPointD(configApD);
+	accessPointB.addReceptionStations(&stationC);
+	accessPointB.printReceptionStations();
+
+	//Adding Station A and Access Point B to the Simulator
+	simulator.addStation(&stationC);
+	simulator.addStation(&accessPointD);
 
 	for (int i = 0; i < 10000; i++)
 	{
 		simulator.update();
 	}
 
-std::cout << "Total number of msgs received: " <<  accessPoint.getNumMsgsReceived() << std::endl;
+std::cout << "Total number of msgs received: " <<  accessPointB.getNumMsgsReceived() << std::endl;
 }
