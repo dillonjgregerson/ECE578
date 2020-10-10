@@ -1,7 +1,9 @@
-#include "Station.hpp"
 #include <iostream>
+#include "Station.hpp"
 #include "DcfProtocol.hpp"
 #include "Simulator.hpp"
+#include "AccessPoint.hpp"
+#include "Message.hpp"
 
 //Performance Metrics
 //Throughput T: The individual station's throughput as a function of lambdaA
@@ -11,21 +13,42 @@
 
 int main()
 {
+	Simulator simulator;
+
 	std::cout << "Hello Simulation\n";
 	Station::StationConfig stationAConfig;
 	Station::StationConfig stationBConfig;
 
-	stationAConfig.protocol = new DcfProtocol();
 	stationAConfig.stationName = "Station A";
-
-	stationBConfig.protocol = new ProtocolBase();
-	stationBConfig.stationName = "Station B";
+	stationAConfig.stationId   = simulator.getUniqueMsgId();
+	stationAConfig.protocol    = new DcfProtocol(stationAConfig.stationId);
 
 	Station stationA(stationAConfig);
+
+	stationBConfig.stationName = "Station B";
+	stationBConfig.stationId = simulator.getUniqueMsgId();
+	stationBConfig.protocol = new DcfProtocol(stationBConfig.stationId);
+
 	Station stationB(stationBConfig);
 
-	Simulator simulator;
+
+	AccessPoint::ConfigData config;
+	config.protocol = new ProtocolBase();
+	AccessPoint accessPoint(config);
+
+	accessPoint.addReceptionStations(&stationA);
+	accessPoint.addReceptionStations(&stationB);
+
+	accessPoint.printReceptionStations();
+
 	simulator.addStation(&stationA);
-	simulator.addStation(&stationB);
-	simulator.update();
+	simulator.addStation(&accessPoint);
+
+
+	for (int i = 0; i < 70; i++)
+	{
+		simulator.update();
+		//std::cin.get();
+	}
+
 }

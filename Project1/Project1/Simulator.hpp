@@ -8,8 +8,10 @@ public:
     Simulator(void);
     ~Simulator(void);
 	void update(void);
-	bool addStation(Station* station);
+	bool addStation(StationBase* station);
+	unsigned long getUniqueMsgId(void) const;
+
 protected:
-	std::list<Station*> stations_;
+	std::list<StationBase*> stations_;
 	SimState* simState_;
 };

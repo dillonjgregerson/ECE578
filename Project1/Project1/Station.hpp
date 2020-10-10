@@ -3,8 +3,10 @@
 #include <string>
 #include "SimParamsT.hpp"
 #include "ProtocolBase.hpp"
+#include "StationBase.hpp"
+#include "SimState.hpp"
 
-class Station
+class Station: public StationBase
 {
 	enum State
 	{
@@ -21,21 +23,20 @@ public:
 	{
 		std::string stationName;
 		ProtocolBase *protocol;
-
+		unsigned long stationId;
 	};
+
 	Station(const StationConfig& config);
-	~Station(void);
+	virtual ~Station(void);
 	std::string getStationName(void) const;
-	void update(void);
+	void listen(void);
+	void takeAction(void);
 	void initialize(int id);
 	int getId(void) const;
-	int stationId_;
-	int backoff_;
+
 protected:
 	ProtocolBase *protocol_;
-
+	SimState *pSimState_;
 	long currentSlot_;
 	std::string stationName_;
-	int selectBackoff(void);
-	
 };

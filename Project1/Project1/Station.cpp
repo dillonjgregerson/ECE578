@@ -1,12 +1,15 @@
+
 #include <string>
 #include <cstdlib>
 #include "Station.hpp"
 #include "ProtocolBase.hpp"
 
 Station::Station(const StationConfig& config):
+	StationBase(config.stationId),
 	protocol_(config.protocol),
 	stationName_(config.stationName),
-	currentSlot_(0)
+	currentSlot_(0),
+	pSimState_(SimState::getInstance())
 {
 
 }
@@ -31,12 +34,12 @@ void Station::initialize(int id)
 	//do station Initialization
 }
 
-int Station::selectBackoff(void)
+void Station::listen(void)
 {
-	return rand() % SimParamsT::CW0;
+	protocol_->updateState(pSimState_->getSignals(), pSimState_->getSlotTime());
 }
 
-void Station::update(void)
+void Station::takeAction(void)
 {
 	protocol_->execute();
 }

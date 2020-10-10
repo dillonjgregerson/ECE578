@@ -3,9 +3,13 @@
 
 class ProtocolBase
 {
+
 public:
 	ProtocolBase();
 	virtual ~ProtocolBase();
 	virtual void nextAction(void);
 	virtual void execute(void);
+	void updateState(unsigned long signal, unsigned long currSlot);
+	unsigned long currSignal_;
+	unsigned long currSlot_;
 };
