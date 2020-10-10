@@ -10,8 +10,8 @@ class DcfProtocol: public ProtocolBase
 
 	struct Interval
 	{
-		int startTime;
-		int endTime;
+		unsigned int startTime;
+		unsigned int endTime;
 		bool init;
 	};
 
@@ -50,6 +50,7 @@ public:
 	bool ackRecieved_;
 	bool linkBusy_;
 	Message* pMessage_;
+	int backoffTime_;
 
 
 };

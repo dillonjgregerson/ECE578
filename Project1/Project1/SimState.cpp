@@ -8,13 +8,14 @@ SimState* SimState::pInstance_(0);
 SimState::SimState(void):
 	currSlotTime_(0)
 {
-
+	poissonDistribution_.generateDistribution();
 }
 
 SimState::~SimState(void)
 {
     //deallocate
 }
+
 void SimState::updateSlot(void)
 {
     currSlotTime_++;
@@ -45,18 +46,7 @@ void SimState::updateState(unsigned long currSignal)
 	currSignals_ += currSignal;
 }
 
-bool SimState::generatePoissonProcess(void)
+unsigned int SimState::getNextArrivalSlot(void)
 {
-	//this function will determine whether or not a station wants to send a message;
-	//todo fill in with actual PoissonProcess formula
-	bool retVal;
-	if (rand() % 10 > 5)
-	{
-		retVal = false;
-	}
-	else
-	{
-		retVal = true;
-	}
-	return retVal;
+	return poissonDistribution_.getNextSlotArrival();
 }

@@ -4,6 +4,8 @@
 #include "Simulator.hpp"
 #include "AccessPoint.hpp"
 #include "Message.hpp"
+#include "PoissonDistribution.hpp"
+#include "Math.h"
 
 //Performance Metrics
 //Throughput T: The individual station's throughput as a function of lambdaA
@@ -44,11 +46,11 @@ int main()
 	simulator.addStation(&stationA);
 	simulator.addStation(&accessPoint);
 
-
+	/*
 	for (int i = 0; i < 70; i++)
 	{
 		simulator.update();
-		//std::cin.get();
 	}
+	*/
 
 }

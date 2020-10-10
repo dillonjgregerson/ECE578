@@ -39,8 +39,15 @@ void AccessPoint::printReceptionStations(void)const
 void AccessPoint::listen(void)
 {
 	unsigned long currSignal = pSimState_->getSignals();
-	bool recieve = false;
+	bool receive = false;
 	for(auto const& a: receptionStations_)
+	{
+		if (currSignal == a->getStationId()) 
+		{
+			receive = true;
+		} 
+	}
+	if (receive == true)
 	{
 
 	}

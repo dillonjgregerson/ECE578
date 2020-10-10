@@ -5,7 +5,7 @@
 class Simulator
 {
 public:
-    Simulator(void);
+	Simulator(void);
     ~Simulator(void);
 	void update(void);
 	bool addStation(StationBase* station);
@@ -14,4 +14,8 @@ public:
 protected:
 	std::list<StationBase*> stations_;
 	SimState* simState_;
+	unsigned int getNextArrivalSlot(void)
+	{
+
+	}
 };

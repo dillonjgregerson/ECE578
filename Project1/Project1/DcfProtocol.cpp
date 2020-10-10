@@ -53,7 +53,7 @@ void DcfProtocol::execute(void)
 	switch (currState_)
 	{
 	case IDLE: 
-		if (pSimState_->generatePoissonProcess())
+		if (pSimState_->getNextArrivalSlot())
 		{
 			difs_.startTime = currSlot_;
 			difs_.endTime = difs_.startTime + SimParamsT::DIFSDuration;
@@ -99,19 +99,25 @@ void DcfProtocol::execute(void)
 		case BACKOFF: 
 			if(backoff_.init)
 			{
-				backoff_.startTime = currSlot_;
-				unsigned long tempBackoff = getNewBackoff();
-				backoff_.endTime = currSlot_ + tempBackoff;
-				std::cout << "Backoff is : " << tempBackoff << " \n";
+				backoffTime_ = getNewBackoff();
 				backoff_.init = false;
 			}
 			else
 			{
-				if (currSlot_ == backoff_.endTime)
+				//todo need to determine what will happen in the sifs state;
+				if (pSimState_->getSignals() == 0)
 				{
-					nextState_ = HDR;
-					header_.init = true;
+					backoffTime_--;
 				}
+				else
+				{
+					//stay idle until next idle time occurs
+				}
+			}
+			if (backoffTime_ == 0)
+			{
+				nextState_ = HDR;
+				header_.init = true;
 			}
 			break;
 		case HDR: 
@@ -123,6 +129,7 @@ void DcfProtocol::execute(void)
 				header_.init = false;
 				nextState_ = FRAME;
 				frame_.init = true;
+
 				//broadcast out header to receiever and any other stations listening.
 			}
 			break;
