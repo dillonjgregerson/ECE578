@@ -51,8 +51,10 @@ int main()
 	simulator.addStation(&stationA);
 	simulator.addStation(&accessPoint);
 
-	for (int i = 0; i < 70; i++)
+	for (int i = 0; i < 10000; i++)
 	{
 		simulator.update();
 	}
+
+std::cout << "Total number of msgs received: " <<  accessPoint.getNumMsgsReceived() << std::endl;
 }

@@ -17,8 +17,12 @@ class AccessPoint: public StationBase
 	{
 		LISTENING,
 		RECEIVING,
+		SIFS,
 		ACK
 	};
+	bool sifsInit_;
+	unsigned int sifsCountdown_;
+	unsigned int ackCountdown_;
 
 public:
 	struct ConfigData
@@ -35,6 +39,7 @@ public:
 	void takeAction(void);
 	bool addReceptionStations(StationBase *station);
 	void printReceptionStations(void) const;
+	unsigned int getNumMsgsReceived(void)const;
 protected:
 	std::list<StationBase*> receptionStations_;
 	ProtocolBase* protocol_;
@@ -48,6 +53,8 @@ protected:
 	bool ackInit_;
 	unsigned int msgFrameIndex_;
 	const static unsigned long RANDOM_ACK_OFFSET = 14257;
+	unsigned int numMsgsReceived_;
+	bool ackMsgSent_;
 
 private:
 	AccessPoint(void);

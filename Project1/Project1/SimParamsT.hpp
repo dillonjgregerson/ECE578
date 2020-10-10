@@ -9,7 +9,7 @@
 
 namespace SimParamsT
 {
-	static int dataFrameSize = 5;         //units- slots
+	static int dataFrameSize = 50;         //units- slots
 	static double slotDuration = 0.000015;  //units - seconds
 	static int SIFSDuration = 1;           //units - slots
 	static int CW0	         = 4;           //units - slots
@@ -23,3 +23,6 @@ namespace SimParamsT
 	static float simulationTime = 10; //units - seconds
 }
 #endif //SIM_PARAMS_T
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////

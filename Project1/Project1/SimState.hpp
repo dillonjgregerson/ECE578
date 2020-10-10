@@ -17,8 +17,9 @@ public:
 	unsigned long getSlotTime(void);
 	static SimState* getInstance(void);
 	unsigned long getSignals(void);
-	void updateState(unsigned long currSignal);
+	void sendSignals(unsigned long currSignal);
 	unsigned int getNextArrivalSlot(void);
+	void clearSignals(void);
 
 protected:
 	static SimState instance_;

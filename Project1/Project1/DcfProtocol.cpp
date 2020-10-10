@@ -70,8 +70,10 @@ DcfProtocol::~DcfProtocol(void)
 ///////////////////////////////////////////////////////////////////////////////
 void DcfProtocol::execute(void)
 {
-	std::cout << "Executing DcfProtocol\n";
 	printCurrState();
+	currSignal_ = pSimState_->getSignals();
+	pSimState_->clearSignals();
+
 	switch (currState_)
 	{
 	case IDLE: 
@@ -103,7 +105,7 @@ void DcfProtocol::execute(void)
 
 		if (currSlot_ < difs_.endTime)
 		{
-		    linkBusy_ = (pSimState_->getSignals() != 0); //if there is activity on the link wait 
+		    linkBusy_ = (currSignal_ != 0); //if there is activity on the link wait 
 		}
 		else
 		{
@@ -135,7 +137,7 @@ void DcfProtocol::execute(void)
 			else
 			{
 				//todo need to determine what will happen in the sifs state;
-				if (pSimState_->getSignals() == 0)
+				if (currSignal_ == 0)
 				{
 					backoffTime_--;
 				}
@@ -161,7 +163,6 @@ void DcfProtocol::execute(void)
 				header_.init = false;
 				nextState_ = FRAME;
 				frame_.init = true;
-
 				//broadcast out header to receiever and any other stations listening.
 			}
 			break;
@@ -171,6 +172,9 @@ void DcfProtocol::execute(void)
 				frame_.startTime = currSlot_;
 				frame_.endTime = currSlot_ + SimParamsT::dataFrameSize;
 				frame_.init = false;
+				frameIndex_ = 0;
+				pSimState_->sendSignals(msgId_);
+				frameIndex_++;
 			}
 			else
 			{
@@ -181,7 +185,8 @@ void DcfProtocol::execute(void)
 				}
 				else
 				{
-					//broadcast frame
+					pSimState_->sendSignals(pMessage_->frame_[frameIndex_]);
+					frameIndex_++;
 				}
 			}
 			break;
@@ -214,9 +219,10 @@ void DcfProtocol::execute(void)
 			}
 			else
 			{
-				unsigned long ackSignal = pSimState_->getSignals();
+				unsigned long ackSignal = currSignal_;
 				if (ackSignal == ackSignal_)
 				{
+					std::cout << "Ack Message Received\n";
 					ackRecieved_ = true;
 				}
 			}

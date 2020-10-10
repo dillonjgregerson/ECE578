@@ -22,7 +22,9 @@ AccessPoint::AccessPoint(const ConfigData& config):
 	msgFrameIndex_(0),
 	nextState_(LISTENING),
 	currState_(LISTENING),
-	receiveMsg_(config.msgId)
+	receiveMsg_(config.msgId),
+	numMsgsReceived_(0),
+	ackMsgSent_(false)
 {
 }
 
@@ -81,6 +83,7 @@ void AccessPoint::printReceptionStations(void)const
 void AccessPoint::listen(void)
 {
 	unsigned long currSignal = pSimState_->getSignals();
+	pSimState_->clearSignals();
 	bool receive = false; //this means that it has heard the msgId sent out by one of the 
 						  //stations it is configured to recieve
 	switch (currState_)
@@ -105,12 +108,14 @@ void AccessPoint::listen(void)
 		if (msgFrameIndex_ < receiveMsg_.msgFrameSize()-1)
 		{
 			receiveMsg_.frame_[msgFrameIndex_] = pSimState_->getSignals();
+			msgFrameIndex_++;
 		}
 		else
 		{
-			if (msgFrameIndex_ == receiveMsg_.msgFrameSize())
+			if (msgFrameIndex_ == receiveMsg_.msgFrameSize()-1)
 			{
-				nextState_ = ACK;
+				nextState_ = SIFS;
+				sifsInit_ = true;
 			}
 			else
 			{
@@ -118,12 +123,49 @@ void AccessPoint::listen(void)
 			}
 		}
 		break;
+	
+	case SIFS: 
+		if (sifsInit_)
+		{
+			sifsCountdown_ = SimParamsT::SIFSDuration;
+			sifsInit_ = false;
+		}
 
-	case ACK: 
+    	if (sifsCountdown_ == 0)
+		{
+			nextState_ = ACK;
+			ackInit_ = true;
+		}
+		else
+		{
+			sifsCountdown_--;
+		}
 		break;
 
-		currState_ = nextState_;
+	case ACK: 
+		if (ackInit_)
+		{
+			ackCountdown_ = SimParamsT::ACKDuration;
+			ackInit_ = false;
+		}
+
+		if (ackCountdown_ > 0 && ackMsgSent_ == false)
+		{
+			ackCountdown_--;
+			pSimState_->sendSignals(ackMsg_);
+			std::cout << "Sending ACK Message out!\n";
+			numMsgsReceived_++;
+			ackMsgSent_ = true;
+		}
+		else
+		{
+			ackMsgSent_ = false;
+			nextState_ = LISTENING;
+		}
+
+		break;
 	}
+	currState_ = nextState_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,6 +175,16 @@ void AccessPoint::listen(void)
 ///////////////////////////////////////////////////////////////////////////////
 void AccessPoint::takeAction(void)
 {
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// @brief returns the total number of messages received
+// @params void
+// @return void
+///////////////////////////////////////////////////////////////////////////////
+unsigned int AccessPoint::getNumMsgsReceived(void) const
+{
+	return numMsgsReceived_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
