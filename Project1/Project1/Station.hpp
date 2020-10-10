@@ -1,3 +1,8 @@
+///////////////////////////////////////////////////////////////////////////////
+// Project: ECE 578 Project 1 The Distributed Coordination function (DCF) of 802.11
+// Author: Dillon Gregerson
+// Originated: 10/10/2020
+///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include <string>
@@ -31,8 +36,8 @@ public:
 	std::string getStationName(void) const;
 	void listen(void);
 	void takeAction(void);
-	void initialize(int id);
-	int getId(void) const;
+	void initialize(unsigned long);
+	unsigned long getId(void) const;
 
 protected:
 	ProtocolBase *protocol_;
@@ -40,3 +45,6 @@ protected:
 	long currentSlot_;
 	std::string stationName_;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////

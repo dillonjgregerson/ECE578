@@ -1,3 +1,8 @@
+///////////////////////////////////////////////////////////////////////////////
+// Project: ECE 578 Project 1 The Distributed Coordination function (DCF) of 802.11
+// Author: Dillon Gregerson
+// Originated: 10/10/2020
+///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include "ProtocolBase.hpp"
@@ -24,6 +29,7 @@ class DcfProtocol: public ProtocolBase
 	Interval header_;
 	Interval frame_;
 	bool collisionOccurred_;
+	bool backoffInterrupted_;
 
 public:
 	explicit DcfProtocol(unsigned long msgId);
@@ -51,6 +57,8 @@ public:
 	bool linkBusy_;
 	Message* pMessage_;
 	int backoffTime_;
+	unsigned long ackSignal_;
+	const static unsigned long RANDOM_ACK_OFFSET = 14257;
 
 
 };

@@ -1,3 +1,8 @@
+///////////////////////////////////////////////////////////////////////////////
+// Project: ECE 578 Project 1 The Distributed Coordination function (DCF) of 802.11
+// Author: Dillon Gregerson
+// Originated: 10/10/2020
+///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include <iostream>
@@ -5,10 +10,16 @@
 #include "SimParamsT.hpp"
 #include "DcfProtocol.hpp"
 
+///////////////////////////////////////////////////////////////////////////////
+// @brief Constructor
+// @params unsigned long msgId
+// @return void
+///////////////////////////////////////////////////////////////////////////////
 DcfProtocol::DcfProtocol(unsigned long msgId) :
 	ProtocolBase(),
     pSimState_(SimState::getInstance()),
 	msgId_(msgId),
+	backoffInterrupted_(false),
 	pMessage_(0)
 {
 	currState_ = IDLE;
@@ -39,13 +50,24 @@ DcfProtocol::DcfProtocol(unsigned long msgId) :
 	collisionOccurred_ = false;
 	linkBusy_ = false;
 	ackRecieved_ = false;
+	ackSignal_ = msgId_ + RANDOM_ACK_OFFSET;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// @brief Destructor
+// @params void
+// @return void
+///////////////////////////////////////////////////////////////////////////////
 DcfProtocol::~DcfProtocol(void)
 {
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// @brief execute the protocol
+// @params void
+// @return void
+///////////////////////////////////////////////////////////////////////////////
 void DcfProtocol::execute(void)
 {
 	std::cout << "Executing DcfProtocol\n";
@@ -53,7 +75,8 @@ void DcfProtocol::execute(void)
 	switch (currState_)
 	{
 	case IDLE: 
-		if (pSimState_->getNextArrivalSlot())
+		if(true)
+		//if (pSimState_->getNextArrivalSlot())
 		{
 			difs_.startTime = currSlot_;
 			difs_.endTime = difs_.startTime + SimParamsT::DIFSDuration;
@@ -99,7 +122,14 @@ void DcfProtocol::execute(void)
 		case BACKOFF: 
 			if(backoff_.init)
 			{
+				if (backoffInterrupted_ == true)
+				{
+					//do nothing
+				}
+				else
+				{
 				backoffTime_ = getNewBackoff();
+				}
 				backoff_.init = false;
 			}
 			else
@@ -111,13 +141,15 @@ void DcfProtocol::execute(void)
 				}
 				else
 				{
-					//stay idle until next idle time occurs
+					nextState_ = DIFS;
+					backoffInterrupted_ = true;
 				}
 			}
 			if (backoffTime_ == 0)
 			{
 				nextState_ = HDR;
 				header_.init = true;
+				backoffInterrupted_ = false;
 			}
 			break;
 		case HDR: 
@@ -180,6 +212,14 @@ void DcfProtocol::execute(void)
 				ack_.endTime = currSlot_ + SimParamsT::ACKDuration;
 				ack_.init = false;
 			}
+			else
+			{
+				unsigned long ackSignal = pSimState_->getSignals();
+				if (ackSignal == ackSignal_)
+				{
+					ackRecieved_ = true;
+				}
+			}
 			if (ack_.endTime == currSlot_)
 			{
 				//check if we received the acknowledgment. if not our msg must have been corrupted.
@@ -200,13 +240,25 @@ void DcfProtocol::execute(void)
 	currState_ = nextState_;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// @brief get a new backoff random number from [0, CW0-1]
+// @params void
+// @return int return random number
+///////////////////////////////////////////////////////////////////////////////
 int DcfProtocol::getNewBackoff(void)
 {
 	return rand() % SimParamsT::CW0;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// @brief print the current state
+// @params void
+// @return void
+///////////////////////////////////////////////////////////////////////////////
 void DcfProtocol::printCurrState(void) const
 {
 	std::cout << "CurrentState is: " << static_cast<int>(currState_) << std::endl;;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////

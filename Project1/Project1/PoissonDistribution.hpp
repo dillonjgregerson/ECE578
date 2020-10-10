@@ -1,3 +1,8 @@
+///////////////////////////////////////////////////////////////////////////////
+// Project: ECE 578 Project 1 The Distributed Coordination function (DCF) of 802.11
+// Author: Dillon Gregerson
+// Originated: 10/10/2020
+///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include <cstdlib>
@@ -30,7 +35,6 @@ public:
 			float tempVal = -1.0f / static_cast<float>(NUM_FRAMES_PER_SECOND);
 			arrayInterArrival_[i] = tempVal * log(1-randFloat);
 			arrayInterArrivalSlots_[i] = static_cast<int>(arrayInterArrival_[i]/0.00001); //diving by the slot lenth (10 mus)
-			std::cout << arrayInterArrivalSlots_[i] << std::endl;
 		}
 	}
 
@@ -41,3 +45,6 @@ public:
 		return retVal;
 	}
 };
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////

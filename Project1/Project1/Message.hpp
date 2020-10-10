@@ -1,14 +1,23 @@
+///////////////////////////////////////////////////////////////////////////////
+// Project: ECE 578 Project 1 The Distributed Coordination function (DCF) of 802.11
+// Author: Dillon Gregerson
+// Originated: 10/10/2020
+///////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include "SimParamsT.hpp"
 #include <cstdlib>
+
 class Message
 {
-	int msgId_;
+
+public:
+	unsigned long msgId_;
 	int header_; //contains the NAV
 	const static int MSG_FRAME_LENGTH = 50; //we are taking the header to be part of the frame
 	unsigned int frame_[MSG_FRAME_LENGTH];
-public:
-	explicit Message(int msgId):msgId_(msgId) 
+
+	explicit Message(unsigned long msgId):msgId_(msgId) 
 	{
 		header_ = SimParamsT::ACKDuration + SimParamsT::dataFrameSize + SimParamsT::SIFSDuration;
 		populateMessage();
@@ -42,4 +51,11 @@ public:
 		}
 		frame_[MSG_FRAME_LENGTH] = checksum;
 	};
+	unsigned int msgFrameSize(void)const
+	{
+		return MSG_FRAME_LENGTH;
+	}
 };
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////

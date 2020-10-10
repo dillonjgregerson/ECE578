@@ -1,3 +1,8 @@
+///////////////////////////////////////////////////////////////////////////////
+// Project: ECE 578 Project 1 The Distributed Coordination function (DCF) of 802.11
+// Author: Dillon Gregerson
+// Originated: 10/10/2020
+///////////////////////////////////////////////////////////////////////////////
 #include <iostream>
 #include "Station.hpp"
 #include "DcfProtocol.hpp"
@@ -46,11 +51,8 @@ int main()
 	simulator.addStation(&stationA);
 	simulator.addStation(&accessPoint);
 
-	/*
 	for (int i = 0; i < 70; i++)
 	{
 		simulator.update();
 	}
-	*/
-
 }
